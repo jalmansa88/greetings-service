@@ -5,40 +5,50 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Greeting {
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
-    private final long id;
-    private final String mensaje;
-    private final String horaEntrada;
+	private long id;
+	@JsonProperty("Mensaje")
+	private String mesage;
+	@JsonProperty("Hora Registro")
+	private String registerTime;
+	@JsonProperty("Ultimo Login")
+	private String lastLogin;
 
-    public Greeting(long id, String mensaje, Timestamp horaEntrada) {
-        this.id = id;
-        this.mensaje = mensaje;
-        this.horaEntrada = sdf.format(horaEntrada);
-    }
+	public Greeting(long id, String mesage, Timestamp registerTime, Timestamp lastLogin) {
+		this.id = id;
+		this.mesage = mesage;
+		this.registerTime = sdf.format(registerTime);
+		this.lastLogin = sdf.format(lastLogin);
+	}
+	
+	public Greeting(long id, String mesage, Timestamp registerTime) {
+		this.id = id;
+		this.mesage = mesage;
+		this.registerTime = sdf.format(registerTime);
+	}
 
 	public long getId() {
-        return id;
-    }
+		return id;
+	}
 
-    public String getMensaje() {
-        return mensaje;
-    }
-    
-    public String getHoraEntrada(){
-    	return horaEntrada;
-    }
-    
-    public Timestamp toHoraEntradaAsTimestamp() {
-    	try {
-			return new Timestamp(sdf.parse(horaEntrada).getTime());
+	public String getMesage() {
+		return mesage;
+	}
+	
+	public String getRegisterTime(){
+		return registerTime;
+	}
+	
+	public Timestamp toTimestamp(String strTime) {
+		try {
+			return new Timestamp(sdf.parse(strTime).getTime());
 		} catch (ParseException e) {
 			return new Timestamp(new Date(0).getTime());
 		}
-    }
+	}
 }

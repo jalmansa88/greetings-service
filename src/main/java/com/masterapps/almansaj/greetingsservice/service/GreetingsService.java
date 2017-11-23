@@ -20,20 +20,25 @@ public class GreetingsService {
 	private UserRepository userRepo;
 	
 	public Greeting sayHi(String username, Timestamp time){
-		User user = userRepo.findOne(username);
+		User user = userRepo.findByName(username);
 		Long totalUsers = userRepo.count();
 		
-		if (user != null){
-			return new Greeting(user.getId(),
-					MessageFormat.format(WELCOME_BACK_MSG, user.getName(), user.getId(), totalUsers),
-					user.getRegisterTime());
-		} else {
+		if (user == null){
 			User newUser = new User(username, time);
-			newUser = userRepo.saveAndFlush(newUser);
+			userRepo.save(newUser);
 			
 			return new Greeting(newUser.getId(), 
 					MessageFormat.format(WELCOME_MSG, username, newUser.getId()),
 					time);
+		} else {
+			Timestamp lastLogin = user.getLastLogin();
+			user.setLastLogin(new Timestamp(System.currentTimeMillis()));
+			userRepo.save(user);
+			
+			return new Greeting(user.getId(),
+					MessageFormat.format(WELCOME_BACK_MSG, user.getName(), user.getId(), totalUsers),
+					user.getRegisterTime(),
+					lastLogin);
 		}
 	}
 	
